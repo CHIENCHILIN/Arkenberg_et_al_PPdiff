@@ -1,7 +1,7 @@
 library(Seurat, quietly = TRUE)
 library(SeuratObject, quietly = TRUE)
 
-Path <- "C:/Users/markenbe/OneDrive - Indiana University/7- R/Data/Pancreatic"
+Path <- "C:/ExampleFolder"
 data <- readRDS(paste0(Path, "/dim12_res0.8.rds"))
 
 #### for cluster 0, comparison of CTR vs. GEL
