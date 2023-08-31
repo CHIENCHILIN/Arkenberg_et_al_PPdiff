@@ -92,7 +92,7 @@ full.results.df <- data.frame(gene = row.names(full.results),
                               padj = full.results$padj,
                               baseMean = full.results$baseMean,
                               logFC_SE = full.results$lfcSE)
-write.csv(full.results.df, file = "C:/Users/markenbe/OneDrive - Indiana University/7- R/Data/Pancreatic/Output/dim12_res0.8_cl2_CTRGEL_MGD_DESeq2.csv")
+write.csv(full.results.df, file = "C:ExampleFolder/Output/dim12_res0.8_cl2_CTRGEL_MGD_DESeq2.csv")
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%% Volcano %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
