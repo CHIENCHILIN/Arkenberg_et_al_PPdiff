@@ -1,3 +1,34 @@
+#### iDEA ####
+library(tidyverse)
+library(scRNAseq)
+library(matrixStats)
+library(iDEA)
+library(zingeR)
+library(DESeq2)
+library(BiocParallel)
+library(data.table)
+
+message("iDEA Library loaded")
+
+res <- fread(file = "C:/Users/.../Output/dim12_res0.8_cl0_CTRGEL_MGD_DESeq2.csv")
+GS <- readRDS(file = "C:/Users/.../Output/CompleteSets.rds")
+
+message("Data loaded")
+
+de.summary <- data.frame(log2FoldChange = res$log2FoldChange,
+                         lfcSE2 = res$logFC_SE^2,
+                         row.names = res$gene)
+
+de.summary.up <- de.summary[de.summary$log2FoldChange > 0, ]
+
+idea <- CreateiDEAObject(de.summary.up, GS, num_core = 1); message("CreateiDEAObject done")
+idea <- iDEA.fit(idea, modelVariant = F); message("iDEA.fit done")
+idea <- iDEA.louis(idea); message("iDEA.louis done")
+
+write.csv(idea@gsea, "C:/Users/.../Output/iDEA_cl0_GEL-CTR(r).csv")
+
+message("Data saved")
+
 ##-------------------------------------------------------------
 ## Simulation Plot: Bubble plot
 ##-------------------------------------------------------------
@@ -11,12 +42,13 @@ Path = "C:/ExampleFolder"
 
 # Building the GSEA + Gene Set info dataframe:
 
-customGeneSetsInfo <- readRDS(file = "C:/Users/yosueda/Documents/RStudio/SOX2 project/Combine/20220112/Output/customGeneSetsInfo.rds")
+customGeneSetsInfo <- readRDS(file = "C:/Users/.../Output/customGeneSetsInfo.rds")
 
 ### The initial DESeq2 analysis seems to switched the up- and down- regulated genes, which results in switched GSEA results.
 # The following script converts the "up" GSEA results into "down" files while adding gene set info, and vice versa.
 
-plotdata<- fread(paste0(Path, "20230112/Output/iDEA_cl0_GEL-CTR(r).csv"))
+plotdata<- fread(paste0(Path, "/Output/iDEA_cl0_GEL-CTR(r).csv"))
+# plotdata<- fread("C:/Users/.../Output/GSEA/iDEA_dn.csv")
 bp.data <- merge.data.table(plotdata, customGeneSetsInfo, by.x = "annot_id", by.y = "gset") #I think this is easier in SQL
 
 bp.data$Category <- droplevels(bp.data$gsetBioName)
@@ -47,7 +79,7 @@ bp.data <- bp.data[order(match(toupper(bp.data$Category), includedCats)), ] #Org
 bp.data$IDNum <- row.names(bp.data) %>% as.integer() #IDNum will define x position on bubble plot
 bp.data$Log10_Pvalue_Louis <- -1*log10(bp.data$pvalue_louis)
 
-write.csv(bp.data, paste0(Path, "20230112/Output/iDEA_cl0_GEL-CTR(r)_iDEAup.full.csv"))
+write.csv(bp.data, paste0(Path, "/Output/iDEA_cl0_GEL-CTR(r)_iDEAup.full.csv"))
 
 
 ##-------------------------------------------------------------
@@ -167,11 +199,11 @@ bp <- ggplot(data.to.plot, aes(x = IDNum, y = Log10_Pvalue_Louis, color = Catego
 
 setEPS(reset = T)
 setEPS(width = 20, height = 20)
-postscript(paste0(Path, "20230112/Output/iDEA-bubble_cl2_GEL-CTR(r).eps"))
+postscript(paste0(Path, "/Output/iDEA-bubble_cl0_GEL-CTR(r).eps"))
 bp
 dev.off()
 
-ggsave(filename = paste0(Path, "20230112/Output/iDEA-bubble_cl0_GEL-CTR(r).eps"),
+ggsave(filename = paste0(Path, "/Output/iDEA-bubble_cl0_GEL-CTR(r).eps"),
        plot = bp,
        width = 20,
        height = 20/1.66667,
